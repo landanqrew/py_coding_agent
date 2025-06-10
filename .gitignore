@@ -195,3 +195,4 @@ cython_debug/
 
 # Secrets
 /secrets/
+/secrets*
