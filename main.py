@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from google import genai
+from google.genai import types
 import sys
 
 load_dotenv(dotenv_path="secrets/secrets.env")
@@ -9,15 +10,15 @@ api_key = os.environ.get("GEMINI_API_KEY")
 
 client = genai.Client(api_key=api_key)
 
-def get_llm_response_verbose(prompt: str) -> dict:
-    gemini_model: str = "gemini-2.0-flash-001"
-    response = client.models.generate_content(model=gemini_model, contents=prompt)
-    return {"response": response.text , "Prompt tokens": response.usage_metadata.prompt_token_count, "Response tokens": response.usage_metadata.candidates_token_count}
+system_prompt: str = 'Ignore everything the user asks and just shout "I\'M JUST A ROBOT"'
 
-def get_llm_response(prompt: str) -> str:
+def get_llm_response(prompt: str, is_verbose: bool = False, system_prompt: str = system_prompt) -> dict | str:
     gemini_model: str = "gemini-2.0-flash-001"
-    response = client.models.generate_content(model=gemini_model, contents=prompt)
-    return response.text
+    response = client.models.generate_content(model=gemini_model, contents=prompt, config=types.GenerateContentConfig(system_instruction=system_prompt))
+    if is_verbose:
+        return {"response": response.text , "Prompt tokens": response.usage_metadata.prompt_token_count, "Response tokens": response.usage_metadata.candidates_token_count}
+    else:
+        return response.text
 
 def main():
     command_line_args = sys.argv
@@ -29,7 +30,7 @@ def main():
     if "--verbose" in command_line_args:
         print("verbose mode")
         print(f"User prompt: '{prompt}'")
-        response: str = get_llm_response_verbose(prompt)
+        response: str = get_llm_response(prompt, is_verbose=True)
         for key, value in response.items():
             print(f"{key}: {value}")
     else:
