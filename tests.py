@@ -2,6 +2,7 @@ import unittest
 from functions.get_files_info import get_files_info
 from functions.get_file_content import get_file_content
 from functions.write_file import write_file
+from functions.run_python import run_python_file
 
 class Tests(unittest.TestCase):
     '''def __init__(self):
@@ -57,12 +58,12 @@ class Tests(unittest.TestCase):
         # should raise ValueError if the file is not a file
         self.assertRaises(ValueError, get_file_content, "calculator", "pkg")
 
-        try:
+        '''try:
             get_file_content("calculator", "/bin/cat")
         except ValueError as e:
             print(e)
         except Exception as e:
-            print(e)
+            print(e)'''
 
     def test_write_file(self):
         # valid case
@@ -86,7 +87,50 @@ class Tests(unittest.TestCase):
         # should raise ValueError if the file is a directory
         self.assertRaises(ValueError, write_file, "calculator", "pkg", "this should not be allowed")
         
-        
+    def test_run_python(self):
+        # valid case
+        output = run_python_file("calculator", "main.py")
+        print('run_python_file("calculator", "main.py"):')
+        print(output)
+        self.assertNotIn("Process exited with code", output)
+
+        # valid case
+        output = run_python_file("calculator", "tests.py")
+        print('run_python_file("calculator", "tests.py"):')
+        print(output)
+        self.assertNotIn("Process exited with code", output)
+
+        # should raise ValueError if the file is outside the working directory
+        self.assertRaises(ValueError, run_python_file, "calculator", "../main.py")
+
+        try:
+            run_python_file("calculator", "../main.py")
+        except ValueError as e:
+            print(e)
+        except Exception as e:
+            print(e)
+
+        # should raise ValueError if the file is not a Python file
+        self.assertRaises(ValueError, run_python_file, "calculator", "lorem.txt")
+
+        # should raise ValueError if the file is not found
+        try:
+            run_python_file("calculator", "lorem.txt")
+        except ValueError as e:
+            print(e)
+        except Exception as e:
+            print(e)
+
+
+        # should raise ValueError if the file does not exist
+        self.assertRaises(ValueError, run_python_file, "calculator", "nonexistent.py")
+
+        try:
+            run_python_file("calculator", "nonexistent.py")
+        except ValueError as e:
+            print(e)
+        except Exception as e:
+            print(e)
 
 if __name__ == "__main__":
     unittest.main()
