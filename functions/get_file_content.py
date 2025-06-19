@@ -12,8 +12,8 @@ def get_file_content(working_directory: str, file_path: str) -> str:
     try:
         if not is_sub_file(working_directory, file_path):
             raise ValueError(f'Error: Cannot read "{file_path}" as it is outside the permitted working directory')
-        fp_final = os.path.normpath(os.path.join(working_directory, file_path))
-        if not os.path.isfile(fp_final):
+        fp_final = get_file_relative_path(working_directory, file_path)
+        if not fp_final or not os.path.isfile(fp_final):
             raise ValueError(f'Error: File not found or is not a regular file: "{file_path}" => "{fp_final}"')
 
         print(f"begin reading file: {fp_final}")
@@ -56,3 +56,36 @@ def is_sub_file(working_directory: str, file_path: str) -> bool:
         return True
             
     return False
+
+def get_file_relative_path(working_directory: str, file_path: str) -> str | None:
+    """
+    Get the relative path of a file.
+    Args:
+        working_directory: The working directory.
+        file_path: The file to check.
+    Returns:
+        The relative path of the file.
+    """
+    file_path_parts = file_path.split(os.sep)
+    for item in os.listdir(working_directory):
+        item_path = os.path.join(working_directory, item)
+        if item == file_path_parts[0]:
+            if len(file_path_parts) == 1:
+                return item_path
+            else:
+                search_results = get_file_relative_path(item_path, "/".join(file_path_parts[1:]))
+                if search_results:
+                    return search_results
+        else:
+            if os.path.isdir(item_path):
+                # print(f"begin searching in {item_path} for {file_path}")
+                search_results = get_file_relative_path(item_path, file_path)
+                if search_results:
+                    return search_results
+    return None
+            
+                
+
+
+if __name__ == "__main__":
+    print(get_file_relative_path(working_directory=".", file_path='lorem.txt'))

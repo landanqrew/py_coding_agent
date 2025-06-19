@@ -31,3 +31,6 @@ def run_python_file(working_directory: str, file_path: str) -> str:
         return output
     except Exception as e:
         raise Exception(f"Error: executing Python file: {e}")
+    
+    if __name__ == "__main__":
+        print(run_python_file(working_directory=".", file_path='tests.py'))

@@ -1,6 +1,6 @@
 import os
 
-def get_files_info(working_directory: str, directory: str | None = None) -> str:
+def get_files_info(working_directory: str, directory: str | None = None, print_result: bool = True) -> str:
     """
     Get the information of the files in a directory.
     Args:
@@ -21,6 +21,8 @@ def get_files_info(working_directory: str, directory: str | None = None) -> str:
     for item in os.listdir(directory):
         item_path = os.path.join(directory, item)
         dir_info += get_file_info(item_path) + "\n"
+    if print_result:
+        print(dir_info[:-1] if len(dir_info) > 0 and dir_info[-1] == "\n" else dir_info)
     return dir_info[:-1] if len(dir_info) > 0 and dir_info[-1] == "\n" else dir_info
 
 def is_sub_dir(working_directory: str, directory: str) -> bool:

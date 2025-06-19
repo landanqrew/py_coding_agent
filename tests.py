@@ -52,6 +52,9 @@ class Tests(unittest.TestCase):
         # print(f"test_get_file_content: LEN: {len(file_content)}")
         self.assertEqual(len(file_content) > 0, True)
 
+        file_content = get_file_content(working_directory=".", file_path='lorem.txt')
+        self.assertIn("wait, this isn't lorem ipsum", file_content)
+
         # should raise ValueError if the file is outside the working directory
         self.assertRaises(ValueError, get_file_content, "calculator", "/bin/cat")
 
